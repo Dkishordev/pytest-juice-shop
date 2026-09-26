@@ -1,0 +1,20 @@
+services:
+  juice-shop:
+    image: bkimminich/juice-shop:latest
+    container_name: juice-shop
+    ports:
+      - "3000:3000"
+
+    volumes:
+      - ./data/juiceshop.sqlite:/juice-shop/data/juiceshop.sqlite
+
+    environment:
+      - NODE_ENV=unsafe
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/rest/admin/application-version"]
+      interval: 10s
+      timeout: 5s
+      retries: 10

@@ -1,0 +1,10 @@
+playwright
+pytest
+pytest-playwright
+pytest-html
+pytest-xdist
+python-dotenv
+requests
+pytest-rerunfailures
+faker
+PyJWT
