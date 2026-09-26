@@ -1,51 +1,76 @@
 import sqlite3
 from contextlib import contextmanager
-from typing import Any
 
 from config.settings import settings
 
+
 class Database:
-    def __init__(self, db_path: str | None = None):
+
+    def __init__(self, db_path=None):
         self.db_path = db_path or settings.DB_PATH
 
     @contextmanager
-    def _connection(self, readonly: bool = True):
-        uri = f"file:{self.db_path}?mode={'ro' if readonly else 'rw'}"
-        conn = sqlite3.connect(uri, uri=True)
+    def connection(self, readonly=True):
+        mode = "ro" if readonly else "rw"
+        database = f"file:{self.db_path}?mode={mode}"
+
+        conn = sqlite3.connect(database, uri=True)
         conn.row_factory = sqlite3.Row
+
         try:
             yield conn
         finally:
             conn.close()
 
-    def query(self, sql: str, params: tuple = ()) -> list[dict[str, Any]]:
-        with self._connection(readonly=True) as conn:
-            cur = conn.execute(sql, params)
-            return [dict(row) for row in cur.fetchall()]
+    def query(self, sql, params=()):
+        with self.connection() as conn:
+            result = conn.execute(sql, params)
+            rows = result.fetchall()
 
-    def query_one(self, sql: str, params: tuple = ()) -> dict[str, Any] | None:
+            return [dict(row) for row in rows]
+
+    def query_one(self, sql, params=()):
         rows = self.query(sql, params)
-        return rows[0] if rows else None
 
-    def get_user_by_email(self, email: str) -> dict[str, Any] | None:
-        return self.query_one("SELECT * FROM Users WHERE email = ?", (email,))
+        if rows:
+            return rows[0]
 
-    def list_tables(self) -> list[str]:
-        rows = self.query("SELECT name FROM sqlite_master WHERE type='table'")
-        return [r["name"] for r in rows]
+        return None
 
-    def get_product_by_id(self, product_id: int) -> dict[str, Any] | None:
-        return self.query_one("SELECT * FROM Products WHERE id = ?", (product_id,))
+    def get_user_by_email(self, email):
+        sql = "SELECT * FROM Users WHERE email = ?"
+        return self.query_one(sql, (email,))
 
-    def count_feedback_containing(self, text: str) -> int:
-        rows = self.query(
-            "SELECT COUNT(*) as c FROM Feedbacks WHERE comment LIKE ?", (f"%{text}%",)
-        )
-        return rows[0]["c"] if rows else 0
+    def list_tables(self):
+        sql = "SELECT name FROM sqlite_master WHERE type='table'"
+        rows = self.query(sql)
 
-    def get_baskets_for_user(self, user_id: int) -> list[dict[str, Any]]:
-        return self.query("SELECT * FROM Baskets WHERE UserId = ?", (user_id,))
+        return [row["name"] for row in rows]
 
-    def user_count(self) -> int:
-        row = self.query_one("SELECT COUNT(*) as c FROM Users")
-        return row["c"] if row else 0
+    def get_product_by_id(self, product_id):
+        sql = "SELECT * FROM Products WHERE id = ?"
+        return self.query_one(sql, (product_id,))
+
+    def count_feedback_containing(self, text):
+        sql = "SELECT COUNT(*) as c FROM Feedbacks WHERE comment LIKE ?"
+
+        rows = self.query(sql, (f"%{text}%",))
+
+        if rows:
+            return rows[0]["c"]
+
+        return 0
+
+    def get_baskets_for_user(self, user_id):
+        sql = "SELECT * FROM Baskets WHERE UserId = ?"
+        return self.query(sql, (user_id,))
+
+    def user_count(self):
+        sql = "SELECT COUNT(*) as c FROM Users"
+
+        row = self.query_one(sql)
+
+        if row:
+            return row["c"]
+
+        return 0

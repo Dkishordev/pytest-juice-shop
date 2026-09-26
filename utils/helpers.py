@@ -1,19 +1,21 @@
 import random
 import string
-from faker import Faker
-
-fake = Faker()
 
 
-def random_email() -> str:
-    return f"sectest_{''.join(random.choices(string.ascii_lowercase, k=8))}@example.com"
+def random_email():
+    letters = ''.join(random.choices(string.ascii_lowercase, k=8))
+    return "sectest_" + letters + "@example.com"
 
 
-def random_password() -> str:
-    return "P@ss" + "".join(random.choices(string.ascii_letters + string.digits, k=8))
+
+def random_password():
+    characters = string.ascii_letters + string.digits
+    password = ''.join(random.choices(characters, k=8))
+    return "P@ss" + password
 
 
-def random_string(length: int = 10) -> str:
-    return "".join(random.choices(string.ascii_letters, k=length))
+def random_string(length=10):
+    letters = ''.join(random.choices(string.ascii_letters, k=length))
+    return letters
 
 
