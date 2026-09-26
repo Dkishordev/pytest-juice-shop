@@ -2,7 +2,7 @@ import pytest
 from pages.login_page import LoginPage
 
 
-""" @pytest.mark.ui
+@pytest.mark.ui
 def test_valid_credentials_log_the_user_in(page, test_user):
     login = LoginPage(page).open()
     login.login(test_user["email"], test_user["password"])
@@ -28,4 +28,3 @@ def test_logout_clears_local_storage_token(logged_in_page):
     logged_in_page.locator("#navbarLogoutButton, button:has-text('Logout')").first.click()
     logged_in_page.wait_for_timeout(500)
     assert base.get_local_storage_token() is None, "Auth token remained in local storage after logout"
- """
