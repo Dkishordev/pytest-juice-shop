@@ -37,6 +37,9 @@ class HomePage(BasePage):
     def add_first_product_to_basket(self):
         self.cards.first.locator("button[aria-label='Add to Basket']").click()
 
+    def add_another_product_to_basket(self):
+            self.cards.nth(1).locator("button[aria-label='Add to Basket']").click()
+
     def open_first_product(self):
         self.cards.first.locator("img").click()
 

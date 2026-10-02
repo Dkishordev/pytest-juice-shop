@@ -1,34 +1,42 @@
 import pytest
+import re
 from pages.register_page import RegisterPage
 from pages.login_page import LoginPage
 from utils.helpers import random_email, random_password
+from playwright.sync_api import expect
 
 
 @pytest.mark.ui
-def test_successful_registration_redirects_to_login(page):
-    reg = RegisterPage(page).open()
-    reg.register(random_email(), random_password())
-    page.wait_for_timeout(500)
-    assert "/login" in page.url, "Successful registration did not redirect to the login page"
-
-
-@pytest.mark.ui
-def test_mismatched_passwords_show_validation_error(page):
-    reg = RegisterPage(page).open()
+def test_ui01_register_new_user(page):
     email = random_email()
-    reg.page.fill(reg.EMAIL_INPUT, email)
-    reg.page.fill(reg.PASSWORD_INPUT, "Password123!")
-    reg.page.fill(reg.REPEAT_PASSWORD_INPUT, "DifferentPassword456!")
-    reg.page.get_by_text("Security Question").click()
-    reg.page.get_by_role("listbox", name="Selection list for the").click()
-    reg.page.fill(reg.SECURITY_ANSWER_INPUT, "Blue")
-    reg.page.click(reg.REGISTER_BUTTON)
-    reg.page.wait_for_timeout(500)
-    assert "/login" not in reg.page.url, "Registration proceeded despite mismatched passwords"
+    password = random_password()
+    RegisterPage(page).open().register(email, password)
+    page.wait_for_timeout(500)
+    expect(page).to_have_url(re.compile(r"#/login"))
 
 
 @pytest.mark.ui
-def test_registered_user_can_immediately_log_in(page):
+def test_ui02_register_password_mismatch(page):
+    reg = RegisterPage(page).open()
+    reg.email.fill(random_email())
+    reg.password.fill("Passw0rd!123")
+    reg.repeat.fill("Different!456")
+    reg.repeat.press("Tab")
+    expect(reg.errors.first).to_be_visible()
+    expect(reg.submit).to_be_disabled()
+
+
+@pytest.mark.ui
+def test_ui03_register_invalid_email(page):
+    reg = RegisterPage(page).open()
+    reg.email.fill("not-an-email")
+    reg.email.press("Tab")
+    expect(reg.errors.first).to_be_visible()
+    expect(reg.submit).to_be_disabled() 
+
+@pytest.mark.smoke
+@pytest.mark.ui
+def test_ui04_registered_user_can_immediately_log_in(page):
     email = random_email()
     password = random_password()
     RegisterPage(page).open().register(email, password)
@@ -36,4 +44,3 @@ def test_registered_user_can_immediately_log_in(page):
     login = LoginPage(page).open()
     login.login(email, password)
     assert login.is_logged_in(), "Newly registered user could not log in with the same credentials"
- 
