@@ -8,6 +8,7 @@ class APIClient:
         self.base_url = (base_url or settings.API_BASE_URL).rstrip("/")
         self.session = requests.Session()
         self.token = None
+        self.bid = None
 
     # Login and user account
 
@@ -76,12 +77,12 @@ class APIClient:
 
     def get_product(self, product_id):
         return self.session.get(
-            self.base_url + "/api/Products/" + str(product_id)
+            self.base_url + "/rest/Products/" + str(product_id)
         )
 
     def update_product(self, product_id, data):
         return self.session.put(
-            self.base_url + "/api/Products/" + str(product_id),
+            self.base_url + "/rest/Products/" + str(product_id),
             json=data
         )
 
@@ -92,12 +93,14 @@ class APIClient:
             self.base_url + "/rest/basket/" + str(basket_id)
         )
 
-    def add_to_basket(self, product_id, quantity, basket_id=1):
+    def add_to_basket(self, product_id, quantity, basket_id=None):
         data = {
             "ProductId": product_id,
-            "BasketId": basket_id,
+            "BasketId": self.bid,
             "quantity": quantity
         }
+        if basket_id is not None:
+            data["BasketId"] = basket_id
 
         return self.session.post(
             self.base_url + "/api/BasketItems",
@@ -111,10 +114,16 @@ class APIClient:
 
     # Feedback and reviews
 
+    def captcha(self):
+        return self.session.get(self.base_url + "/rest/captcha")
+
     def submit_feedback(self, comment, rating=5):
+        c = self.captcha().json()
         data = {
             "comment": comment,
-            "rating": rating
+            "rating": rating,
+            "captchaId": c["captchaId"], 
+            "captcha": str(c["answer"])
         }
 
         return self.session.post(
