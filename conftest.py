@@ -64,8 +64,10 @@ def test_user():
     assert response.status_code in (200, 201), (
         f"Failed to create test user: {response.text}"
     )
+    body = response.json()
 
     return {
+        "id": body["data"]["id"],
         "email": email,
         "password": password
     }
