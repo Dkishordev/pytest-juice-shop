@@ -65,7 +65,7 @@ class APIClient:
 
     def get_products(self):
         return self.session.get(
-            self.base_url + "/rest/products"
+            self.base_url + "/rest/products/search"
         )
 
     def search_products(self, query):

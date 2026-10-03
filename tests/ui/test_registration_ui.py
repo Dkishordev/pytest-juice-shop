@@ -34,7 +34,7 @@ def test_ui03_register_invalid_email(page):
     expect(reg.errors.first).to_be_visible()
     expect(reg.submit).to_be_disabled() 
 
-@pytest.mark.smoke
+
 @pytest.mark.ui
 def test_ui04_registered_user_can_immediately_log_in(page):
     email = random_email()

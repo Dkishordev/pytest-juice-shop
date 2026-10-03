@@ -46,6 +46,10 @@ def page(browser):
 def database():
     return Database()
 
+@pytest.fixture
+def api_client():
+    return APIClient()
+
 
 # Test user
 
