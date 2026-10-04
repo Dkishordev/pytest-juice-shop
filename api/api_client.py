@@ -66,7 +66,7 @@ class APIClient:
 
     def get_products(self):
         return self.session.get(
-            self.base_url + "/rest/products/search"
+            self.base_url + "/api/products"
         )
 
     def search_products(self, query):
@@ -77,7 +77,7 @@ class APIClient:
 
     def get_product(self, product_id):
         return self.session.get(
-            self.base_url + "/rest/Products/" + str(product_id)
+            self.base_url + "/api/Products/" + str(product_id)
         )
 
     def update_product(self, product_id, data):

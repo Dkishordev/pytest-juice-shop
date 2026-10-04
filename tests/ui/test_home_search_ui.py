@@ -47,14 +47,14 @@ def test_ui14_navigate_to_about_us(page):
 def test_ui15_search_for_known_product_returns_results(page):
     search = HomePage(page).open_home()
     search.search("apple")
-    assert search.result_count() > 0, "Searching for a known product term returned zero results"
+    assert search.result_count() > 0
 
 
 @pytest.mark.ui
 def test_ui16_search_for_nonexistent_product_returns_no_results(page):
     search = HomePage(page).open_home()
     search.search("zzz_definitely_not_a_real_product_zzz")
-    assert search.result_count() == 0, "Search for a nonsense term unexpectedly returned products"
+    assert search.result_count() == 0
 
 
 @pytest.mark.ui
@@ -63,6 +63,6 @@ def test_ui17_clearing_search_restores_full_product_list(page):
     baseline_count = search.result_count()
     search.search("apple")
     filtered_count = search.result_count()
-    assert filtered_count <= baseline_count, "Filtered search returned more items than the full catalog"
+    assert filtered_count <= baseline_count
  
  

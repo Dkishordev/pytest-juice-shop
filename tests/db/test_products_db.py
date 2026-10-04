@@ -24,7 +24,7 @@ def test_db07_every_product_has_a_nonempty_name(database):
     bad = [r for r in rows if not r["name"] or not r["name"].strip()]
     assert not bad, f"Products with empty name found: {bad}"
 
-@pytest.mark.smoke
+
 @pytest.mark.db
 def test_db08_product_count_via_db_matches_product_count_via_api(database, api_client):
     db_count = database.query_one("SELECT COUNT(*) as c FROM Products where deletedAt is NULL")["c"]
