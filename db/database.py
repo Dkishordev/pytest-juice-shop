@@ -55,7 +55,6 @@ class Database:
         sql = "SELECT COUNT(*) as c FROM Feedbacks WHERE comment LIKE ?"
 
         rows = self.query(sql, (f"%{text}%",))
-
         if rows:
             return rows[0]["c"]
 

@@ -20,3 +20,6 @@ class BasketPage(BasePage):
 
     def remove_first(self):
         self.rows.first.locator("button:has(.fa-trash-alt)").click()
+
+    def item_count(self):
+        return self.item_rows.count()

@@ -19,3 +19,19 @@ def random_string(length=10):
     return letters
 
 
+def captcha_bypass(database,captcha_question):
+    rows = database.query_one(  """
+            SELECT answer
+            FROM Captchas
+            WHERE captcha = ?
+            LIMIT 1
+            """,
+            (captcha_question,),
+        )
+    
+    if rows is None:
+        raise ValueError(f"CAPTCHA not found in database: {captcha_question}")
+    return str(rows['answer'])
+
+
+
