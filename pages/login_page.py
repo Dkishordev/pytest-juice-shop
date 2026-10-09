@@ -26,6 +26,16 @@ class LoginPage(BasePage):
     def is_logged_in(self):
         token = self.get_local_storage_token()
         return token is not None
+    
+    def clear_auth_state(self):
+        self.page.evaluate("""
+            () => {
+                localStorage.clear();
+                sessionStorage.clear();
+            }
+        """)
+        self.page.reload()
+        self.page.wait_for_load_state("domcontentloaded")
 
     def get_error_text(self):
         try:
