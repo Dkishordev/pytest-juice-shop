@@ -34,4 +34,11 @@ def captcha_bypass(database,captcha_question):
     return str(rows['answer'])
 
 
+SQLI_PAYLOADS = [
+    "' OR '1'='1",
+    "' OR ''='",
+]
+
+
+
 
